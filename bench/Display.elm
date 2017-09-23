@@ -24,34 +24,55 @@ init flags =
                 |> (,) ()
 
         Ok benches ->
-            benches
-                |> List.foldr
-                    (\bench acc ->
-                        Dict.update
-                            bench.inputSize
-                            (\existing ->
-                                Maybe.map ((::) bench) existing
-                                    |> Maybe.withDefault [ bench ]
-                                    |> Just
+            let
+                benchesByInputSize : List ( Int, List Bench )
+                benchesByInputSize =
+                    benches
+                        |> List.foldr
+                            (\bench acc ->
+                                Dict.update
+                                    bench.inputSize
+                                    (\existing ->
+                                        Maybe.map ((::) bench) existing
+                                            |> Maybe.withDefault [ bench ]
+                                            |> Just
+                                    )
+                                    acc
                             )
-                            acc
-                    )
-                    Dict.empty
-                |> Dict.toList
-                |> List.map
-                    (\( inputSize, benches ) ->
-                        benches
-                            |> List.sortBy .kind
-                            |> List.map
-                                (\{ samples, sampleSize } ->
-                                    toFloat (List.length samples * sampleSize)
-                                        / toFloat (List.sum samples)
-                                        |> toString
-                                )
-                            |> String.join "\t"
-                            |> (++) "\t"
-                            |> (++) (toString inputSize)
-                    )
+                            Dict.empty
+                        |> Dict.toList
+
+                benchLines : List String
+                benchLines =
+                    benchesByInputSize
+                        |> List.map
+                            (\( inputSize, benches ) ->
+                                benches
+                                    |> List.sortBy .kind
+                                    |> List.map
+                                        (\{ samples, sampleSize } ->
+                                            toFloat (List.length samples * sampleSize)
+                                                / toFloat (List.sum samples)
+                                                |> toString
+                                        )
+                                    |> String.join "\t"
+                                    |> (++) "\t"
+                                    |> (++) (toString inputSize)
+                            )
+
+                allLines =
+                    case benchesByInputSize of
+                        [] ->
+                            benchLines
+
+                        ( _, benches ) :: _ ->
+                            List.sortBy .kind benches
+                                |> List.map .kind
+                                |> String.join "\t"
+                                |> (++) "#\t"
+                                |> flip (::) benchLines
+            in
+            allLines
                 |> String.join "\n"
                 |> Json.Encode.string
                 |> emit
