@@ -2,7 +2,7 @@ port module Main exposing (main)
 
 import Benchmark.LowLevel as B exposing (benchmark3)
 import Benchmark.Runner.Node as Runner exposing (BenchmarkProgram)
-import FastFoldr as FF
+import Fast.List as FastList
 import Json.Encode exposing (Value)
 
 
@@ -25,7 +25,7 @@ doCompare size =
     Runner.compare
         [ benchmark3 "core" List.foldr (::) [] input
         , benchmark3 "next" ffoldr (::) [] input
-        , benchmark3 "experiment" FF.foldr (::) [] input
+        , benchmark3 "experiment" FastList.foldr (::) [] input
         ]
 
 

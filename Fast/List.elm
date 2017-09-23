@@ -34,7 +34,7 @@ chunkAndMap op list chunks =
 mapChunks : (a -> b) -> List (List a) -> List b -> List b
 mapChunks op chunks acc =
     case chunks of
-        [ a, b, c, d, e ] :: xs ->
+        (a :: b :: c :: d :: e :: _) :: xs ->
             mapChunks op xs (op a :: op b :: op c :: op d :: op e :: acc)
 
         _ ->
@@ -74,7 +74,7 @@ chunkAndFoldr op acc list chunks =
 foldChunks : (a -> b -> b) -> List (List a) -> b -> b
 foldChunks op chunks acc =
     case chunks of
-        [ a, b, c, d, e ] :: xs ->
+        (a :: b :: c :: d :: e :: _) :: xs ->
             foldChunks op xs (op e acc |> op d |> op c |> op b |> op a)
 
         _ ->

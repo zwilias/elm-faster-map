@@ -2,7 +2,7 @@ port module Main exposing (main)
 
 import Benchmark.LowLevel as B exposing (benchmark2)
 import Benchmark.Runner.Node as Runner exposing (BenchmarkProgram)
-import FastMap as FM
+import Fast.List as FastList
 import Json.Encode exposing (Value)
 
 
@@ -25,7 +25,7 @@ doCompare size =
     Runner.compare
         [ benchmark2 "core" List.map identity input
         , benchmark2 "next" fmap identity input
-        , benchmark2 "experiment" FM.map identity input
+        , benchmark2 "experiment" FastList.map identity input
         ]
 
 
