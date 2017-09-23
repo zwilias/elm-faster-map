@@ -1,27 +1,35 @@
-module Main exposing (main)
+port module Main exposing (main)
 
-import Benchmark as B exposing (Benchmark, benchmark2)
-import Benchmark.Runner as B exposing (BenchmarkProgram)
+import Benchmark.LowLevel as B exposing (benchmark2)
+import Benchmark.Runner.Node as Runner exposing (BenchmarkProgram)
 import FastMap as FM
+import Json.Encode exposing (Value)
 
 
 main : BenchmarkProgram
 main =
-    [ 0, 2, 32, 64, 128, 256, 512, 1024, 2048 ]
-        |> List.map doCompare
-        |> B.describe "maps"
-        |> B.program
+    Runner.series
+        "Trying to find a faster map"
+        (\s -> toString s)
+        doCompare
+        (List.map (\exp -> 2 ^ exp) (List.range 0 20))
+        |> Runner.run emit
 
 
-doCompare : Int -> Benchmark
+doCompare : Int -> Runner.Benchmark
 doCompare size =
     let
         input =
             List.range 0 size
     in
-    B.compare ("size: " ++ toString size)
-        (benchmark2 "0.19 foldr" fmap identity input)
-        (benchmark2 "new" FM.map identity input)
+    Runner.compare
+        [ benchmark2 "core" List.map identity input
+        , benchmark2 "next" fmap identity input
+        , benchmark2 "experiment" FM.map identity input
+        ]
+
+
+port emit : Value -> Cmd msg
 
 
 fmap : (a -> b) -> List a -> List b
