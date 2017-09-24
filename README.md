@@ -2,7 +2,7 @@
 
 ## `List.foldr`
 
-*todo*
+![map](charts/foldr.png)
 
 ## `List.map`
 
