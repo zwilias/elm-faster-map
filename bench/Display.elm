@@ -51,9 +51,11 @@ init flags =
                                     |> List.sortBy .kind
                                     |> List.map
                                         (\{ samples, sampleSize } ->
-                                            toFloat (List.length samples * sampleSize)
+                                            toFloat ((List.length samples * sampleSize) * inputSize)
                                                 / toFloat (List.sum samples)
                                                 |> toString
+                                                |> String.split "."
+                                                |> String.join ","
                                         )
                                     |> String.join "\t"
                                     |> (++) "\t"

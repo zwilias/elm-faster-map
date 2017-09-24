@@ -16,8 +16,8 @@ app.ports.emit.subscribe(function(v) {
         case 'done':
             process.stderr.write(v.msg);
             process.stderr.write('\x1B[?25h\n\n');
-            console.log(JSON.stringify(v.data, null, 2));
+            process.stdout.write(JSON.stringify(v.data, null, 0));
+            process.stdout.write('\n');
             process.exit(0);
     }
 });
-
