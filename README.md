@@ -44,3 +44,11 @@ Both these loops can be implemented in a tail-recursive manner, and both are fai
 ## Credits
 
 Based on https://twitter.com/antron__/status/910894281593942017
+
+## Running the benchmarks
+
+- Go into `bench`
+- run `./run.sh MapBench.elm | column -t` to compare `map` performance
+- run `./run.sh FoldrBench.elm | column -t` to compare `foldr` performance
+
+Fair warning: these take a while.
