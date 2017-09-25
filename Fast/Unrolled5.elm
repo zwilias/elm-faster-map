@@ -1,4 +1,4 @@
-module Fast.List5 exposing (foldr, map)
+module Fast.Unrolled5 exposing (foldr, map)
 
 
 map : (a -> b) -> List a -> List b
@@ -12,23 +12,33 @@ chunkAndMap op list chunks =
         [] ->
             mapChunks op chunks []
 
-        a :: [] ->
-            mapChunks op chunks [ op a ]
+        a :: t1 ->
+            case t1 of
+                [] ->
+                    mapChunks op chunks [ op a ]
 
-        a :: b :: [] ->
-            mapChunks op chunks [ op a, op b ]
+                b :: t2 ->
+                    case t2 of
+                        [] ->
+                            mapChunks op chunks [ op a, op b ]
 
-        a :: b :: c :: [] ->
-            mapChunks op chunks [ op a, op b, op c ]
+                        c :: t3 ->
+                            case t3 of
+                                [] ->
+                                    mapChunks op chunks [ op a, op b, op c ]
 
-        a :: b :: c :: d :: [] ->
-            mapChunks op chunks [ op a, op b, op c, op d ]
+                                d :: t4 ->
+                                    case t4 of
+                                        [] ->
+                                            mapChunks op chunks [ op a, op b, op c, op d ]
 
-        a :: b :: c :: d :: e :: [] ->
-            mapChunks op chunks [ op a, op b, op c, op d, op e ]
+                                        e :: xs ->
+                                            case xs of
+                                                [] ->
+                                                    mapChunks op chunks [ op a, op b, op c, op d, op e ]
 
-        _ :: _ :: _ :: _ :: _ :: xs ->
-            chunkAndMap op xs (list :: chunks)
+                                                _ ->
+                                                    chunkAndMap op xs (list :: chunks)
 
 
 mapChunks : (a -> b) -> List (List a) -> List b -> List b

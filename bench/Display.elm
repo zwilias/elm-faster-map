@@ -40,8 +40,6 @@ init flags =
                                             toFloat ((List.length samples * sampleSize) * inputSize)
                                                 / toFloat (List.sum samples)
                                                 |> toString
-                                                |> String.split "."
-                                                |> String.join ","
                                         )
                                     |> String.join "\t"
                                     |> (++) "\t"

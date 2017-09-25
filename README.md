@@ -120,9 +120,16 @@ Fair warning: these take a while.
   -> [performance for foldr](charts/foldrdepth.png)
 
   As long as it's over 3, things start to matter less. 4 is still struggling a little, 5 seems great, 6 and up seem somewhat less stable.
-- [ ] impact of manually unrolling vs multiple patterns
-  - [ ] performance impact
-  - [ ] code-size impact
+
+- [x] impact of manually unrolling vs multiple patterns
+  - [x] performance impact
+
+    -> [performance of flat vs unrolled](charts/flatvsunrolled.png)
+
+  - [x] code-size impact
+
+    -> So since every pattern is an extension of the previous pattern, the compiler is being super-nice and generating very compact code. As a matter of fact, manually unrolling leads to _more_ code. However, after minifying through uglifyJS, the relevant code for `List.map` is 1111 characters for the "flat" version, and 1064 for the "nested" version. A marginal saving, but a saving nonetheless.
+
 - [ ] impact of tuples vs pattern-matches
   - [x] performance
 
