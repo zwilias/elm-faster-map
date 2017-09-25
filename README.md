@@ -65,9 +65,9 @@ mapChunks op chunkList acc =
 
 Note that it's pretty trivial to make this work properly for lists of length that doesn't happen to be a multiple of `N` by passing in the remaining N-1 elements with `op` already applied as the accumulator for `mapChunks`.
 
-Now, _why_ would this be fast to begin with? Essentially we're minimizing the number of full traversals we need. With `N = 1`, the described pattern would essentially be reversing the list and doing a `foldl` over it, which needs 2 full traversals, i.e. `O(2n)` for a list of `n` entries.
+Now, _why_ would this be fast to begin with? Essentially we're minimizing the number of full traversals we need. With `N = 1`, the described pattern would essentially be reversing the list and doing a `foldl` over it, which needs 2 full traversals and needs to consider each element separately.
 
-However, for `N = 2`, this already halves the number of full traversals we need to do, at the cost of more pattern matching - which also doesn't come free.
+However, for `N = 2`, this already halves the number of full traversals we need to do, at the cost of more pattern matching. Note that the time complexity for both is the same - we're still going `O(2n)` - _however_ the constant factors involved are quite different. Function calls are very expensive, while pattern matching is relatively cheap.
 
 So, the challenge is finding an `N` that provides a good balance between the cost of the required pattern-matching, and the savings by limiting the number of full traversals we need.
 
@@ -115,15 +115,20 @@ Fair warning: these take a while.
 ## TODO
 
 - [x] how deep to unroll
-   -> [performance of different N](charts/depth.png)
-   -> [performance for foldr](charts/foldrdepth.png)
 
-   As long as it's over 3, things start to matter less. 4 is still struggling a little, 5 seems great, 6 and up seem somewhat less stable.
+  -> [performance of different N](charts/depth.png)
+  -> [performance for foldr](charts/foldrdepth.png)
+
+  As long as it's over 3, things start to matter less. 4 is still struggling a little, 5 seems great, 6 and up seem somewhat less stable.
 - [ ] impact of manually unrolling vs multiple patterns
   - [ ] performance impact
   - [ ] code-size impact
 - [ ] impact of tuples vs pattern-matches
-  - [ ] performance
+  - [x] performance
+
+    -> [performance of tails vs tuples for map](charts/tailtuplesmapperf.png)
+    -> [performance of tails vs tuples for foldr](charts/tailstuplesfoldrperf.png)
+
   - [ ] memory
 - [ ] cross-browser tests
 - [ ] charts through API? https://developers.google.com/chart/interactive/docs/spreadsheets
