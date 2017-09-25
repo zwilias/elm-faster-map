@@ -16,7 +16,7 @@ main =
 
 init : Decode.Value -> ( (), Cmd msg )
 init flags =
-    case Decode.decodeValue (Decode.field "variations" decodeBenches) flags of
+    case Decode.decodeValue decodeBenches flags of
         Err error ->
             error
                 |> Json.Encode.string
@@ -27,20 +27,7 @@ init flags =
             let
                 benchesByInputSize : List ( Int, List Bench )
                 benchesByInputSize =
-                    benches
-                        |> List.foldr
-                            (\bench acc ->
-                                Dict.update
-                                    bench.inputSize
-                                    (\existing ->
-                                        Maybe.map ((::) bench) existing
-                                            |> Maybe.withDefault [ bench ]
-                                            |> Just
-                                    )
-                                    acc
-                            )
-                            Dict.empty
-                        |> Dict.toList
+                    Dict.toList benches
 
                 benchLines : List String
                 benchLines =
@@ -48,7 +35,6 @@ init flags =
                         |> List.map
                             (\( inputSize, benches ) ->
                                 benches
-                                    |> List.sortBy .kind
                                     |> List.map
                                         (\{ samples, sampleSize } ->
                                             toFloat ((List.length samples * sampleSize) * inputSize)
@@ -68,7 +54,7 @@ init flags =
                             benchLines
 
                         ( _, benches ) :: _ ->
-                            List.sortBy .kind benches
+                            benches
                                 |> List.map .kind
                                 |> String.join "\t"
                                 |> (++) "#\t"
@@ -84,34 +70,9 @@ init flags =
 port emit : Json.Encode.Value -> Cmd msg
 
 
-decodeBenches : Decoder (List Bench)
+decodeBenches : Decoder (Dict Int (List Bench))
 decodeBenches =
-    Decode.keyValuePairs Decode.value
-        |> Decode.andThen
-            (\kvs ->
-                let
-                    combined =
-                        List.foldr
-                            (\( k, v ) acc ->
-                                Result.map2 (++)
-                                    (String.toInt k
-                                        |> Result.andThen
-                                            (\key ->
-                                                Decode.decodeValue (benchEntryDecoder key) v
-                                            )
-                                    )
-                                    acc
-                            )
-                            (Ok [])
-                            kvs
-                in
-                case combined of
-                    Err err ->
-                        Decode.fail err
-
-                    Ok v ->
-                        Decode.succeed v
-            )
+    Decode.field "variations" (Decode.list benchEntryDecoder |> Decode.map Dict.fromList)
 
 
 type alias Bench =
@@ -122,11 +83,16 @@ type alias Bench =
     }
 
 
-benchEntryDecoder : Int -> Decoder (List Bench)
-benchEntryDecoder inputSize =
-    Decode.map2 (::)
-        (Decode.field "baseline" (benchDecoder inputSize))
-        (Decode.field "cases" <| Decode.list (benchDecoder inputSize))
+benchEntryDecoder : Decoder ( Int, List Bench )
+benchEntryDecoder =
+    Decode.field "variation" Decode.int
+        |> Decode.andThen
+            (\inputSize ->
+                Decode.map2 (::)
+                    (Decode.field "baseline" (benchDecoder inputSize))
+                    (Decode.field "cases" <| Decode.list (benchDecoder inputSize))
+                    |> Decode.map ((,) inputSize)
+            )
 
 
 benchDecoder : Int -> Decoder Bench

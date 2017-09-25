@@ -1,22 +1,22 @@
 port module Main exposing (main)
 
-import Benchmark.LowLevel as B exposing (benchmark3)
-import Benchmark.Runner.Node as Runner exposing (BenchmarkProgram)
 import Fast.List5 as FL5
 import Json.Encode exposing (Value)
+import Series.LowLevel exposing (benchmark3)
+import Series.Runner as Runner
+import Series.Runner.Node as Runner exposing (SeriesProgram)
 
 
-main : BenchmarkProgram
+main : SeriesProgram Int
 main =
     Runner.series
         "map all the things"
-        toString
         doCompare
         (List.map (\exp -> 2 ^ exp) (List.range 0 20))
-        |> Runner.run emit
+        |> Runner.program emit Json.Encode.int
 
 
-doCompare : Int -> Runner.Benchmark
+doCompare : Int -> Runner.Comparison
 doCompare size =
     let
         input =
