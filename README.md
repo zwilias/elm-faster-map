@@ -73,7 +73,7 @@ So, the challenge is finding an `N` that provides a good balance between the cos
 
 Additionally, a higher `N` means more code.
 
-**However** there is a second, more hidden cost: we're allocating a bunch of extra datastructures - those tuples each take up some memory, and we're holding `n // N` of these in memory.
+**However** there is a second, more hidden cost: we're allocating a bunch of extra datastructures - those tuples each take up some memory, and we're holding `n // N` of these in memory. The actual act of constructing a tuple _also_ comes at a cost!
 
 So here's a second realization: we can keep the tails of the list in memory, and pattern match on those in `mapChunks`. Since we've already proven that each tail holds the appropriate number of elements, this means we only pay the cost of pattern-matching twice. Since lists are a nested datastructure, holding on to a "subtree" of that costs no more than a single pointer.
 
@@ -131,4 +131,3 @@ Fair warning: these take a while.
 
   - [ ] memory
 - [ ] cross-browser tests
-- [ ] charts through API? https://developers.google.com/chart/interactive/docs/spreadsheets
