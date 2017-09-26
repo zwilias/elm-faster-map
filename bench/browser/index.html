@@ -1,0 +1,15 @@
+<html>
+<body>
+  <script src="/_compile/Runner.elm"></script>
+  <script>
+  var app = Elm.Runner.fullscreen();
+
+app.ports.loadFile.subscribe(function() {
+  window.setTimeout(function() {
+    var worker = Elm.Main.worker();
+
+    worker.ports.emit.subscribe(app.ports.receive.send);
+  }, 500);
+});
+</script>
+</body>

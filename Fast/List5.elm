@@ -49,23 +49,23 @@ foldr op acc list =
 chunkAndFoldr : (a -> b -> b) -> b -> List a -> List (List a) -> b
 chunkAndFoldr op acc list chunks =
     case list of
-        a :: b :: c :: d :: e :: [] ->
-            foldChunks op chunks (op a (op b (op c (op d (op e acc)))))
-
-        a :: b :: c :: d :: [] ->
-            foldChunks op chunks (op a (op b (op c (op d acc))))
-
-        a :: b :: c :: [] ->
-            foldChunks op chunks (op a (op b (op c acc)))
-
-        a :: b :: [] ->
-            foldChunks op chunks (op a (op b acc))
+        [] ->
+            foldChunks op chunks acc
 
         a :: [] ->
             foldChunks op chunks (op a acc)
 
-        [] ->
-            foldChunks op chunks acc
+        a :: b :: [] ->
+            foldChunks op chunks (op a (op b acc))
+
+        a :: b :: c :: [] ->
+            foldChunks op chunks (op a (op b (op c acc)))
+
+        a :: b :: c :: d :: [] ->
+            foldChunks op chunks (op a (op b (op c (op d acc))))
+
+        a :: b :: c :: d :: e :: [] ->
+            foldChunks op chunks (op a (op b (op c (op d (op e acc)))))
 
         _ :: _ :: _ :: _ :: _ :: xs ->
             chunkAndFoldr op acc xs (list :: chunks)

@@ -38,7 +38,7 @@ init flags =
                                     |> List.map
                                         (\{ samples, sampleSize } ->
                                             toFloat ((List.length samples * sampleSize) * inputSize)
-                                                / toFloat (List.sum samples)
+                                                / List.sum samples
                                                 |> toString
                                         )
                                     |> String.join "\t"
@@ -77,7 +77,7 @@ type alias Bench =
     { kind : String
     , inputSize : Int
     , sampleSize : Int
-    , samples : List Int
+    , samples : List Float
     }
 
 
@@ -99,4 +99,4 @@ benchDecoder inputSize =
         (Decode.field "name" Decode.string)
         (Decode.succeed inputSize)
         (Decode.field "sampleSize" Decode.int)
-        (Decode.field "samples" (Decode.list Decode.int))
+        (Decode.field "samples" (Decode.list Decode.float))

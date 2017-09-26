@@ -131,10 +131,15 @@ Fair warning: these take a while.
     -> So since every pattern is an extension of the previous pattern, the compiler is being super-nice and generating very compact code. As a matter of fact, manually unrolling leads to _more_ code. However, after minifying through uglifyJS, the relevant code for `List.map` is 1111 characters for the "flat" version, and 1064 for the "nested" version. A marginal saving, but a saving nonetheless.
 
 - [ ] impact of tuples vs pattern-matches
-  - [x] performance
 
-    -> [performance of tails vs tuples for map](charts/tailtuplesmapperf.png)
-    -> [performance of tails vs tuples for foldr](charts/tailstuplesfoldrperf.png)
+  -> [performance of tails vs tuples for map](charts/tailtuplesmapperf.png)
+  -> [performance of tails vs tuples for foldr](charts/tailstuplesfoldrperf.png)
 
-  - [ ] memory
-- [ ] cross-browser tests
+- [x] cross-browser tests
+  - [chrome](charts/chrome-map.png)
+  - [firefox 57](charts/ff57-map.png)
+  - [firefox stable](charts/ffstable-map.png)
+  - [IE11](charts/ie11-map.png)
+  - [IE15/edge](ie15-map.png)
+  - [node](node-map.png)
+  - [safari](safari-map.png)
